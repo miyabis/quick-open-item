@@ -1,7 +1,8 @@
 ﻿<AML>
  <Item type="Method" id="4D8590E2E4C7465D938E4AD873FD87AA" action="add">
   <execution_allowed_to keyed_name="World" type="Identity">A73B655731924CD0B027E4F4D5FCC0A9</execution_allowed_to>
-  <method_code><![CDATA[const queryTypeOptions = [
+  <method_code>
+    <![CDATA[const queryTypeOptions = [
 	'Part',
 	'Document',
 	'CAD'
@@ -10,9 +11,18 @@
 return {
 	value: 'Part',
 	options: queryTypeOptions.map(function(option) {
+		var q = new Item();
+		var s = '<AML><Item action="get" type="Itemtype"><name>' + option + '</name><Relationships><Item action="get" type="Property" select="label"></Item></Relationships></Item></AML>';
+		q.loadAML(s);
+		var r = q.apply();
+		if ( r.isError()||r.getItemCount()<1 ) {
+			top.aras.AlertError("not found.");
+			return false;
+		}
+
 		return {
 			value: option,
-			label: option
+			label: r.getProperty("label")
 		};
 	})
 };]]></method_code>
